@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RumahNilai — Worth It Classifier Surabaya</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Rumah<span>Nilai</span></div>
+  <div class="nav-links">
+    <button class="nav-btn active" onclick="go('home')">Beranda</button>
+    <button class="nav-btn" onclick="go('find')">🔍 Cari Rumah</button>
+    <button class="nav-btn" onclick="go('add')">➕ Tambah</button>
+    <button class="nav-btn" onclick="go('check')">⚡ Cek Worth It</button>
+  </div>
+  <div class="nav-tag">PKM-AI · UC Surabaya</div>
+</nav>
+
+<!-- ── HOME ── -->
+<div id="pg-home" class="page on">
+  <div class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-eye">🏠 Machine Learning · Surabaya</div>
+        <h1 class="hero-h1">Temukan Rumah<br/>yang <em>Worth It</em><br/>untuk Kamu</h1>
+        <p class="hero-sub">Sistem klasifikasi kelayakan harga properti Surabaya berbasis AI — didukung oleh data survei 248 rumah yang dilabeli oleh 10 responden ahli.</p>
+      </div>
+      <div class="stats-grid">
+        <div class="stat"><div class="stat-n" id="st-total">248</div><div class="stat-l">Total Rumah</div></div>
+        <div class="stat"><div class="stat-n" id="st-worth">—</div><div class="stat-l">Worth It</div></div>
+        <div class="stat"><div class="stat-n" id="st-not">—</div><div class="stat-l">Not Worth It</div></div>
+        <div class="stat"><div class="stat-n">10</div><div class="stat-l">Responden Ahli</div></div>
+      </div>
+      <div class="hero-btns">
+        <button class="btn-gold" onclick="go('find')">Cari Rumah →</button>
+        <button class="btn-ghost" onclick="go('check')">Cek Worth It Gratis</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── FIND ── -->
+<div id="pg-find" class="page">
+  <div class="wrap">
+    <div class="sec-label">Database Properti</div>
+    <div class="sec-title">Cari Rumah Sesuai Budget</div>
+
+    <div class="search-panel">
+      <div class="search-row">
+        <div class="sf">
+          <label>Budget Maks (juta Rp)</label>
+          <input type="number" id="f-budget" placeholder="Contoh: 2000" min="0" oninput="filter()"/>
+        </div>
+        <div class="sf">
+          <label>Wilayah</label>
+          <select id="f-wil" onchange="filter()">
+            <option value="">Semua Wilayah</option>
+            <option>Barat</option><option>Pusat</option><option>Selatan</option><option>Timur</option><option>Utara</option>
+          </select>
+        </div>
+        <div class="sf">
+          <label>Kamar Min</label>
+          <select id="f-kamar" onchange="filter()">
+            <option value="0">Semua</option><option value="1">1+</option><option value="2">2+</option><option value="3">3+</option><option value="4">4+</option>
+          </select>
+        </div>
+        <div class="sf">
+          <label>Status Terjual</label>
+          <select id="f-terjual" onchange="filter()">
+            <option value="">Semua</option><option value="Belum">Belum Terjual</option><option value="Terjual">Terjual</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="chips" id="worth-chips">
+      <button class="chip on" onclick="setWorth('',this)">⭐ Semua</button>
+      <button class="chip" onclick="setWorth('Worth-It',this)">✅ Worth It</button>
+      <button class="chip" onclick="setWorth('Not Worth-It',this)">❌ Not Worth It</button>
+    </div>
+
+    <div class="res-row">
+      <div class="res-count"><b id="res-count">0</b> rumah ditemukan</div>
+    </div>
+    <div class="house-grid" id="house-grid"></div>
+    <div class="empty" id="empty" style="display:none">
+      <div class="ei">🏚️</div>
+      <p>Tidak ada rumah yang sesuai filter.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── ADD ── -->
+<div id="pg-add" class="page">
+  <div class="wrap">
+    <div class="sec-label">Jual Properti</div>
+    <div class="sec-title">Tambahkan Rumah Baru</div>
+    <div class="form-card">
+      <div class="toast" id="add-toast">🎉 Rumah berhasil ditambahkan dan diklasifikasi oleh AI!</div>
+      <div class="form-block">
+        <div class="form-block-title">📍 Lokasi</div>
+        <div class="form-grid">
+          <div class="ff"><label>Wilayah</label>
+            <select id="a-wil" onchange="fillKec('a-kec','a-wil')">
+              <option value="">Pilih</option>
+              <option>Barat</option><option>Pusat</option><option>Selatan</option><option>Timur</option><option>Utara</option>
+            </select>
+          </div>
+          <div class="ff"><label>Kecamatan</label><select id="a-kec"><option value="">Pilih Wilayah dulu</option></select></div>
+        </div>
+      </div>
+      <div class="form-block">
+        <div class="form-block-title">📐 Spesifikasi</div>
+        <div class="form-grid">
+          <div class="ff"><label>Luas Tanah (m²)</label><input type="number" id="a-tanah" placeholder="0" min="0"/></div>
+          <div class="ff"><label>Luas Bangunan (m²)</label><input type="number" id="a-ban" placeholder="0" min="0"/></div>
+          <div class="ff"><label>Jumlah Kamar</label><input type="number" id="a-kamar" placeholder="0" min="0"/></div>
+          <div class="ff"><label>Kamar Mandi</label><input type="number" id="a-km" placeholder="0" min="0"/></div>
+          <div class="ff"><label>Lantai</label><input type="number" id="a-lantai" placeholder="1" min="1"/></div>
+          <div class="ff"><label>Harga Jual (juta Rp)</label><input type="number" id="a-harga" placeholder="0" min="0"/></div>
+        </div>
+      </div>
+      <div class="form-block">
+        <div class="form-block-title">🏷️ Detail</div>
+        <div class="form-grid">
+          <div class="ff"><label>Arah Hadap</label>
+            <select id="a-arah"><option value="">Pilih</option><option>Utara</option><option>Selatan</option><option>Timur</option><option>Barat</option><option>Tenggara</option><option>Barat Daya</option><option>Timur Laut</option><option>Barat Laut</option></select>
+          </div>
+          <div class="ff"><label>Posisi Rumah</label>
+            <select id="a-posisi"><option value="">Pilih</option><option>Hook</option><option>Standard/Tengah</option><option>Tengah</option></select>
+          </div>
+          <div class="ff"><label>Lebar Jalan ROW (m)</label><input type="number" id="a-row" placeholder="0" min="0"/></div>
+        </div>
+      </div>
+      <button class="form-submit" id="add-btn" onclick="addHouse()">🏠 Tambah & Klasifikasi dengan AI</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── CHECK ── -->
+<div id="pg-check" class="page">
+  <div class="wrap">
+    <div class="sec-label">Analisis AI</div>
+    <div class="sec-title">Cek Worth It Rumah Kamu</div>
+    <div class="check-wrap">
+      <div class="form-card">
+        <div class="form-block">
+          <div class="form-block-title">📍 Lokasi</div>
+          <div class="form-grid">
+            <div class="ff"><label>Wilayah</label>
+              <select id="c-wil" onchange="fillKec('c-kec','c-wil')">
+                <option value="">Pilih</option>
+                <option>Barat</option><option>Pusat</option><option>Selatan</option><option>Timur</option><option>Utara</option>
+              </select>
+            </div>
+            <div class="ff"><label>Kecamatan</label><select id="c-kec"><option value="">Pilih Wilayah dulu</option></select></div>
+          </div>
+        </div>
+        <div class="form-block">
+          <div class="form-block-title">📐 Spesifikasi</div>
+          <div class="form-grid">
+            <div class="ff"><label>Luas Tanah (m²)</label><input type="number" id="c-tanah" placeholder="0" min="0"/></div>
+            <div class="ff"><label>Luas Bangunan (m²)</label><input type="number" id="c-ban" placeholder="0" min="0"/></div>
+            <div class="ff"><label>Jumlah Kamar</label><input type="number" id="c-kamar" placeholder="0" min="0"/></div>
+            <div class="ff"><label>Kamar Mandi</label><input type="number" id="c-km" placeholder="0" min="0"/></div>
+            <div class="ff"><label>Lantai</label><input type="number" id="c-lantai" placeholder="1" min="1"/></div>
+            <div class="ff"><label>Harga Jual (juta Rp)</label><input type="number" id="c-harga" placeholder="0" min="0"/></div>
+          </div>
+        </div>
+        <div class="form-block">
+          <div class="form-block-title">🏷️ Detail</div>
+          <div class="form-grid">
+            <div class="ff"><label>Arah Hadap</label>
+              <select id="c-arah"><option value="">Pilih</option><option>Utara</option><option>Selatan</option><option>Timur</option><option>Barat</option><option>Tenggara</option><option>Barat Daya</option><option>Timur Laut</option><option>Barat Laut</option></select>
+            </div>
+            <div class="ff"><label>Posisi Rumah</label>
+              <select id="c-posisi"><option value="">Pilih</option><option>Hook</option><option>Standard/Tengah</option><option>Tengah</option></select>
+            </div>
+            <div class="ff"><label>Lebar Jalan ROW (m)</label><input type="number" id="c-row" placeholder="0" min="0"/></div>
+          </div>
+        </div>
+        <button class="form-submit" id="chk-btn" onclick="doCheck()">⚡ Analisis dengan AI Sekarang</button>
+      </div>
+
+      <div class="result-pane" id="res-pane">
+        <div id="res-idle">
+          <div class="idle-icon">🏡</div>
+          <div class="idle-txt">Isi form di sebelah kiri<br/>lalu klik <strong>"Analisis dengan AI"</strong><br/>untuk melihat hasilnya.</div>
+        </div>
+        <div id="res-loading" style="display:none">
+          <div class="idle-txt" style="margin-bottom:4px">AI sedang menganalisis…</div>
+          <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        </div>
+        <div class="verdict" id="res-verdict" style="display:none">
+          <div class="ai-chip">🤖 AI Analysis</div>
+          <div class="verdict-icon" id="v-icon"></div>
+          <div class="verdict-txt" id="v-txt"></div>
+          <div class="verdict-conf" id="v-conf"></div>
+          <div style="width:100%">
+            <div class="prob-row"><div class="prob-lbl">Worth It</div><div class="prob-track"><div class="prob-fill w" id="pb-w" style="width:0%"></div></div><div class="prob-pct" id="pp-w">0%</div></div>
+            <div class="prob-row"><div class="prob-lbl">Not Worth It</div><div class="prob-track"><div class="prob-fill n" id="pb-n" style="width:0%"></div></div><div class="prob-pct" id="pp-n">0%</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL ── -->
+<div class="modal-bg" id="modal-bg" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+
+  <script src="resources/Survey_Combined_MajorityVote.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
